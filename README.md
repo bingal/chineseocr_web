@@ -20,7 +20,7 @@
 ## docker 运行
 ```bash
 # 拉取代码
-git clone https://gitee.com/bingal/chineseocr_web.git
+git clone https://git.pc.com.cn/in-smart/chineseocr_web.git
 # 进入目录
 cd chineseocr_web
 # build 镜像
