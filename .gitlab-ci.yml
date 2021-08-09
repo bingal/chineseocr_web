@@ -1,0 +1,42 @@
+variables:
+  DOCKER_REGISTRY: 192.168.10.97:5000
+  SPRING_PROFILES_ACTIVE: dev
+  DOCKER_IMAGE: docker:latest
+  VERSION: ORC.2021.8.9.RELEASE
+
+stages:
+  - build
+  - deploy
+
+#templte
+.build-template: &build-template
+  stage: build
+  image: ${DOCKER_IMAGE}
+  only:
+    - master
+  script:
+    - DOCKER_BUILDKIT=1 docker build -t ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION} ${PROJECT_CORE_DIR}
+    - docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION}
+  tags:
+    - dev
+
+.deploy-template: &deploy-template
+  stage: deploy
+  image: ${DOCKER_IMAGE}
+  only:
+    - master
+  script:
+    - docker stop ${PROJECT_NAME} && docker rm ${PROJECT_NAME}
+    - docker run -d --net=host --name=${PROJECT_NAME} ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION}
+  tags:
+    - dev
+
+orc-build:
+  variables:
+    PROJECT_NAME: sem-ocr
+    PROJECT_CORE_DIR: ./
+  <<: *build-template
+orc-deploy:
+  variables:
+    PROJECT_NAME: sem-ocr
+  <<: *deploy-template
