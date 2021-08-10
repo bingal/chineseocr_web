@@ -24,7 +24,7 @@ COPY requirements.txt .
 RUN source ~/.bash_profile && pip3 install -r requirements.txt
 
 #代码层
-COPY . /data/project/
+COPY . .
 
 EXPOSE 5000
 EXPOSE 8000
