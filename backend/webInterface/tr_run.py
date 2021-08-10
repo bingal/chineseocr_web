@@ -109,7 +109,7 @@ class TrRun(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "x-requested-with")
 
         img_url = self.get_query_argument('url', '', strip=True)
-        compress_size = self.get_query_argument('shortlen', None)
+        compress_size = self.get_query_argument('shortlen', '1200')
         mosaic_words = self.get_query_argument('keyword', '', strip=True)
         if not img_url:
             self.set_status(400)
