@@ -5,8 +5,9 @@ ENV LANG C.UTF-8 LC_ALL=C.UTF-8
 
 WORKDIR /data/project/
 
-RUN yum -y update \
-    && yum -y install gcc gcc-c++ wget make git libSM-1.2.2-2.el7.x86_64 libXrender libXext\
+
+#RUN yum -y update \
+RUN yum -y install gcc gcc-c++ wget make git libSM-1.2.2-2.el7.x86_64 libXrender libXext\
     && yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel \
     && yum -y install python3-devel centos-release-scl scl-utils-build \
     && yum -y install  devtoolset-7-gcc* \
