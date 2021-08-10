@@ -26,10 +26,10 @@ cd chineseocr_web
 # build 镜像
 docker build -t chineseocr_web .
 # 运行
-docker run --rm -d --name chineseocr_web -p 8080:80 chineseocr_web
+docker run --rm -d --name chineseocr_web -p 8080:8080 chineseocr_web
 # 或者可以把工作目录映射到本地
-docker run --rm -d --name chineseocr_web -p 8080:80 -v $(pwd):/data/project chineseocr_web
-# 浏览器打开 http://localhost:4000/ 即可访问web界面
+docker run --rm -d --name chineseocr_web -p 8080:8080 -v $(pwd):/data/project chineseocr_web
+# 浏览器打开 http://localhost:8080/ 即可访问web界面
 ```
 
 ## 接口使用

@@ -157,7 +157,7 @@ export default defineComponent({
       if(formState.words){
         formData.append('keyword', formState.words)
       }
-      axios.post('http://localhost:4000/api/tr-run/', formData).then(res => {
+      axios.post('/api/tr-run/', formData).then(res => {
         // console.log(res);
         ocrState.processing = false;
         const ocr = res.data.data;
