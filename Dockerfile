@@ -26,7 +26,10 @@ RUN source ~/.bash_profile && pip3 install -r requirements.txt
 #代码层
 COPY . .
 
+#原有端口（不知用途）
 EXPOSE 5000
 EXPOSE 8000
+#部署端口
+EXPOSE 8080
 
-CMD python3 backend/main.py
+ENTRYPOINT  ["python3", "backend/main.py"]
