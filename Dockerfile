@@ -1,9 +1,10 @@
 FROM centos:7.2.1511
 
 LABEL Author="Pad0y<github.com/Pad0y>"
-
 ENV LANG C.UTF-8 LC_ALL=C.UTF-8
 
+COPY . /data/project/
+WORKDIR /data/project/
 
 RUN yum -y update \
     && yum -y install gcc gcc-c++ wget make git libSM-1.2.2-2.el7.x86_64 libXrender libXext\
@@ -20,9 +21,6 @@ RUN pip3 install --user  -U pip -i https://pypi.tuna.tsinghua.edu.cn/simple/  \
 
 
 RUN source ~/.bash_profile && pip3 install -r requirements.txt
-
-COPY . /data/project/
-WORKDIR /data/project/
 
 EXPOSE 5000
 EXPOSE 8000
