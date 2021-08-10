@@ -26,21 +26,21 @@ cd chineseocr_web
 # build 镜像
 docker build -t chineseocr_web .
 # 运行
-docker run --rm -d --name chineseocr_web -p 4000:8089 chineseocr_web
+docker run --rm -d --name chineseocr_web -p 8080:80 chineseocr_web
 # 或者可以把工作目录映射到本地
-docker run --rm -d --name chineseocr_web -p 4000:8089 -v $(pwd):/data/project chineseocr_web
+docker run --rm -d --name chineseocr_web -p 8080:80 -v $(pwd):/data/project chineseocr_web
 # 浏览器打开 http://localhost:4000/ 即可访问web界面
 ```
 
 ## 接口使用
-### get http://localhost:4000/api/tr-run/
+### get http://localhost:8080/api/tr-run/
 参数说明
 * url : 在线的图片url
 * keyword : 包含关键词的文字都会被涂抹，多个关键词以逗号分隔，如果为空则涂抹全部
 * shortlen : 短边尺寸，文字识别的时候图片尺寸太小会影响识别准确度，如：960或1200
 * 直接返回涂抹后的图片二进制数据
 
-### post http://localhost:4000/api/tr-run/
+### post http://localhost:8080/api/tr-run/
 参数说明
 * url | img | file : 图片的输入支持三种形式，url: 在线图片地址，img: 图片文件的base64编码数据，file : 文件上传形式
 * keyword : 包含关键词的文字都会被涂抹，多个关键词以逗号分隔，如果为空则涂抹全部
