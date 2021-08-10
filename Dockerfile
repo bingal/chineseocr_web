@@ -1,4 +1,4 @@
-FROM centos:7.2.1511
+FROM centos:7
 
 LABEL Author="Pad0y<github.com/Pad0y>"
 ENV LANG C.UTF-8 LC_ALL=C.UTF-8
