@@ -3,7 +3,6 @@ FROM centos:7
 LABEL Author="Pad0y<github.com/Pad0y>"
 ENV LANG C.UTF-8 LC_ALL=C.UTF-8
 
-COPY . /data/project/
 WORKDIR /data/project/
 
 RUN yum -y update \
@@ -19,7 +18,7 @@ RUN yum -y update \
 RUN pip3 install --user  -U pip -i https://pypi.tuna.tsinghua.edu.cn/simple/  \ 
     && pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/ 
 
-
+COPY . /data/project/
 RUN source ~/.bash_profile && pip3 install -r requirements.txt
 
 EXPOSE 5000
