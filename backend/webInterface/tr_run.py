@@ -53,7 +53,7 @@ class TrRun(tornado.web.RequestHandler):
             if not mosaic_words:
                 left, top, right, bottom, mask = self.make_mask(pos)
                 region = im.crop((left, top, right, bottom))
-                region = region.filter(ImageFilter.GaussianBlur(radius=5))
+                region = region.filter(ImageFilter.GaussianBlur(radius=10))
                 im.paste(region, (left, top), mask=mask)
                 matched_text.append(txt)
             else:
@@ -84,7 +84,7 @@ class TrRun(tornado.web.RequestHandler):
             if not mosaic_words:
                 left, top, right, bottom, mask = self.make_mask(pos)
                 region = im.crop((left, top, right, bottom))
-                region = region.filter(ImageFilter.GaussianBlur(radius=5))
+                region = region.filter(ImageFilter.GaussianBlur(radius=10))
                 im.paste(region, (left, top), mask=mask)
                 matched_text.append(txt)
             else:
