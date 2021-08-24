@@ -111,10 +111,23 @@ class TrRun(tornado.web.RequestHandler):
         img_url = self.get_query_argument('url', '', strip=True)
         compress_size = self.get_query_argument('shortlen', '1200')
         mosaic_words = self.get_query_argument('keyword', '', strip=True)
+        ext = 'jpg'
+        img_fmts = {
+            'jpg':'JPEG',
+            'jpeg':'JPEG',
+            'png':'PNG',
+            'webp':'WEBP'
+        }
+        
         if not img_url:
             self.set_status(400)
             self.finish('参数 shortlen 错误')
             return
+        tempurl = img_url.lower()
+        tempurl = tempurl.split('?')[0]
+        tempurl = tempurl.split('/')[-1]
+        if '.' in tempurl:
+            ext = tempurl.split('.')[-1]
         try:
             response = requests.get(
                 img_url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36 Edg/92.0.902.62'}, timeout=30)
@@ -147,11 +160,23 @@ class TrRun(tornado.web.RequestHandler):
         short_size = 32 * (short_size//32)
 
         img_w, img_h = img.size
-        if max(img_w, img_h) * (short_size * 1.0 / min(img_w, img_h)) > dbnet_max_size:
-            self.set_status(400)
-            self.finish('图片reize后长边过长，请调整短边尺寸, 最大值 {}, 目前是 {}'.format(dbnet_max_size), max(
-                img_w, img_h) * (short_size * 1.0 / min(img_w, img_h)))
+        # 图片尺寸太小返回原图
+        if max(img_w, img_h) < 400:
+            self.set_header('content-type', 'image/{}'.format(img_fmts.get(ext, 'jpeg').lower()))
+            output_buffer = BytesIO()
+            img.save(output_buffer, format=img_fmts.get(ext, 'JPEG'))
+            self.write(output_buffer.getvalue())
             return
+        # 图片reize后长边过长，调整short_size
+        if max(img_w, img_h) * (short_size * 1.0 / min(img_w, img_h)) > dbnet_max_size:
+            short_size = int(dbnet_max_size * 1.0 * min(img_w, img_h) / max(img_w, img_h))
+            # img_w_new = dbnet_max_size if img_w >= img_h else int(dbnet_max_size * img_w * 1.0 / img_h)
+            # img_h_new = dbnet_max_size if img_w <= img_h else int(dbnet_max_size * img_h * 1.0 / img_w)
+            # img = img.resize((img_w_new, img_h_new))
+            # self.set_status(400)
+            # self.finish('图片reize后长边过长，请调整短边尺寸, 最大值 {}, 目前是 {}'.format(dbnet_max_size), max(
+            #     img_w, img_h) * (short_size * 1.0 / min(img_w, img_h)))
+            # return
 
 
         res = ocrhandle.text_predict(img, short_size)
@@ -159,11 +184,11 @@ class TrRun(tornado.web.RequestHandler):
         mosaic_img = self.do_mosaic_img_only(img, res, mosaic_words)
 
         output_buffer = BytesIO()
-        mosaic_img.save(output_buffer, format='JPEG')
+        mosaic_img.save(output_buffer, format=img_fmts.get(ext, 'JPEG'))
         
         byte_data = output_buffer.getvalue()
         # Content-Type: image/jpeg
-        self.set_header('content-type', 'image/jpeg')
+        self.set_header('content-type', 'image/{}'.format(img_fmts.get(ext, 'jpeg').lower()))
         # self.set_header('Content-Disposition', 'attachment;filename={}'.format(_filename))
         # with open(output_buffer, 'rb') as f:
         self.write(byte_data)
@@ -292,8 +317,9 @@ class TrRun(tornado.web.RequestHandler):
         img_w, img_h = img.size
         if max(img_w, img_h) * (short_size * 1.0 / min(img_w, img_h)) > dbnet_max_size:
             # logger.error(exc_info=True)
-            res.append("图片reize后长边过长，请调整短边尺寸")
-            do_det = False
+            short_size = int(dbnet_max_size * 1.0 * min(img_w, img_h) / max(img_w, img_h))
+            # res.append("图片reize后长边过长，请调整短边尺寸")
+            # do_det = False
             # self.finish(json.dumps({'code': 400, 'msg': '图片reize后长边过长，请调整短边尺寸'}, cls=NpEncoder))
             # return
 
