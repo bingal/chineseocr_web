@@ -161,12 +161,12 @@ class TrRun(tornado.web.RequestHandler):
 
         img_w, img_h = img.size
         # 图片尺寸太小返回原图
-        if max(img_w, img_h) < 400:
-            self.set_header('content-type', 'image/{}'.format(img_fmts.get(ext, 'jpeg').lower()))
-            output_buffer = BytesIO()
-            img.save(output_buffer, format=img_fmts.get(ext, 'JPEG'))
-            self.write(output_buffer.getvalue())
-            return
+        # if max(img_w, img_h) < 400:
+        #     self.set_header('content-type', 'image/{}'.format(img_fmts.get(ext, 'jpeg').lower()))
+        #     output_buffer = BytesIO()
+        #     img.save(output_buffer, format=img_fmts.get(ext, 'JPEG'))
+        #     self.write(output_buffer.getvalue())
+        #     return
         # 图片reize后长边过长，调整short_size
         if max(img_w, img_h) * (short_size * 1.0 / min(img_w, img_h)) > dbnet_max_size:
             short_size = int(dbnet_max_size * 1.0 * min(img_w, img_h) / max(img_w, img_h))
