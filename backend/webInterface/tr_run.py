@@ -13,6 +13,7 @@ import datetime
 import json
 import requests
 from io import BytesIO
+import traceback
 
 from backend.tools.np_encoder import NpEncoder
 from backend.tools import log
@@ -315,82 +316,87 @@ class TrRun(tornado.web.RequestHandler):
             short_size = 32 * (short_size//32)
 
         img_w, img_h = img.size
+        long_size = max(img_w, img_h)
         if max(img_w, img_h) * (short_size * 1.0 / min(img_w, img_h)) > dbnet_max_size:
             # logger.error(exc_info=True)
             short_size = int(dbnet_max_size * 1.0 * min(img_w, img_h) / max(img_w, img_h))
+            long_size = int(short_size * max(img_w, img_h) / min(img_w, img_h))
             # res.append("图片reize后长边过长，请调整短边尺寸")
             # do_det = False
             # self.finish(json.dumps({'code': 400, 'msg': '图片reize后长边过长，请调整短边尺寸'}, cls=NpEncoder))
             # return
+        try:
 
-        if do_det:
+            if do_det:
 
-            res = ocrhandle.text_predict(img, short_size)
+                res = ocrhandle.text_predict(img, short_size)
 
-            img_detected = img.copy()
-            img_draw = ImageDraw.Draw(img_detected)
-            colors = ['red', 'green', 'blue', "purple"]
+                img_detected = img.copy()
+                img_draw = ImageDraw.Draw(img_detected)
+                colors = ['red', 'green', 'blue', "purple"]
 
-            for i, r in enumerate(res):
-                rect, txt, confidence = r
+                for i, r in enumerate(res):
+                    rect, txt, confidence = r
 
-                x1, y1, x2, y2, x3, y3, x4, y4 = rect.reshape(-1)
-                size = max(min(x2-x1, y3-y2) // 2, 20)
+                    x1, y1, x2, y2, x3, y3, x4, y4 = rect.reshape(-1)
+                    size = max(min(x2-x1, y3-y2) // 2, 20)
 
-                myfont = ImageFont.truetype("fangsong_GB2312.ttf", size=size)
-                fillcolor = colors[i % len(colors)]
-                img_draw.text((x1, y1 - size), str(i+1),
-                              font=myfont, fill=fillcolor)
-                for xy in [(x1, y1, x2, y2), (x2, y2, x3, y3), (x3, y3, x4, y4), (x4, y4, x1, y1)]:
-                    img_draw.line(xy=xy, fill=colors[i % len(colors)], width=2)
+                    myfont = ImageFont.truetype("fangsong_GB2312.ttf", size=size)
+                    fillcolor = colors[i % len(colors)]
+                    img_draw.text((x1, y1 - size), str(i+1),
+                                font=myfont, fill=fillcolor)
+                    for xy in [(x1, y1, x2, y2), (x2, y2, x3, y3), (x3, y3, x4, y4), (x4, y4, x1, y1)]:
+                        img_draw.line(xy=xy, fill=colors[i % len(colors)], width=2)
 
-            output_buffer = BytesIO()
-            img_detected.save(output_buffer, format='JPEG')
-            byte_data = output_buffer.getvalue()
-            img_detected_b64 = base64.b64encode(byte_data).decode('utf8')
+                output_buffer = BytesIO()
+                img_detected.save(output_buffer, format='JPEG')
+                byte_data = output_buffer.getvalue()
+                img_detected_b64 = base64.b64encode(byte_data).decode('utf8')
 
-        else:
-            output_buffer = BytesIO()
-            img.save(output_buffer, format='JPEG')
-            byte_data = output_buffer.getvalue()
-            img_detected_b64 = base64.b64encode(byte_data).decode('utf8')
+            else:
+                output_buffer = BytesIO()
+                img.save(output_buffer, format='JPEG')
+                byte_data = output_buffer.getvalue()
+                img_detected_b64 = base64.b64encode(byte_data).decode('utf8')
 
-        log_info = {
-            'ip': self.request.remote_ip,
-            'return': res,
-            'time': time_now,
-            'mosaic_words': mosaic_words if mosaic_words else ''
-        }
-        logger.info(json.dumps(log_info, cls=NpEncoder))
-        # 如果是传入url则把原始图片返回
-        origin_img = ''
-        if img_url is not None and img_url.startswith('http'):
-            output_buffer = BytesIO()
-            img.save(output_buffer, format='JPEG')
-            byte_data = output_buffer.getvalue()
-            origin_img = base64.b64encode(byte_data).decode('utf8')
-        # 对文字模糊处理
-        mosaic = {}
-        mosaic_img = ''
-        if do_det:
-            mosaic = self.do_mosaic(img, res, mosaic_words)
-            if rt_mosaic == '1':
-                mosaic_img = mosaic.get('mosaic_img', '')
-            try:
-                del mosaic['mosaic_img']
-            except Exception:
-                pass
-        if rt_ocr == '0':
-            img_detected_b64 = ''
-        if rt_origin == '0':
+            log_info = {
+                'ip': self.request.remote_ip,
+                'return': res,
+                'time': time_now,
+                'mosaic_words': mosaic_words if mosaic_words else ''
+            }
+            logger.info(json.dumps(log_info, cls=NpEncoder))
+            # 如果是传入url则把原始图片返回
             origin_img = ''
-        result = {'code': 200, 'msg': '成功',
-                'data': {'ocr_img': img_detected_b64,
-                         'ocr_info': res,
-                         'mosaic_img': mosaic_img,
-                         'origin_img': origin_img,
-                         'speed_time': round(time.time() - start_time, 2),
-                         'mosaic_info': mosaic}}
+            if img_url is not None and img_url.startswith('http'):
+                output_buffer = BytesIO()
+                img.save(output_buffer, format='JPEG')
+                byte_data = output_buffer.getvalue()
+                origin_img = base64.b64encode(byte_data).decode('utf8')
+            # 对文字模糊处理
+            mosaic = {}
+            mosaic_img = ''
+            if do_det:
+                mosaic = self.do_mosaic(img, res, mosaic_words)
+                if rt_mosaic == '1':
+                    mosaic_img = mosaic.get('mosaic_img', '')
+                try:
+                    del mosaic['mosaic_img']
+                except Exception:
+                    pass
+            if rt_ocr == '0':
+                img_detected_b64 = ''
+            if rt_origin == '0':
+                origin_img = ''
+            result = {'code': 200, 'msg': '成功',
+                    'data': {'ocr_img': img_detected_b64,
+                            'ocr_info': res,
+                            'mosaic_img': mosaic_img,
+                            'origin_img': origin_img,
+                            'speed_time': round(time.time() - start_time, 2),
+                            'mosaic_info': mosaic}}
+        except Exception:
+            result = {'code': 500, 'msg': traceback.format_exc(), 'long_size':long_size, 'short_size':short_size}
         
 
         # data:image/jpeg;base64,
