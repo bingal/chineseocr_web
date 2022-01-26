@@ -1,6 +1,5 @@
 variables:
   DOCKER_REGISTRY: 192.168.72.200:5000
-  SPRING_PROFILES_ACTIVE: dev
   DOCKER_IMAGE: docker:latest
   VERSION: ORC.2021.8.25.2.RELEASE
 
@@ -33,10 +32,10 @@ stages:
 
 orc-build:
   variables:
-    PROJECT_NAME: sem-ocr
+    PROJECT_NAME: mp-media-ocr
     PROJECT_CORE_DIR: ./
   <<: *build-template
 orc-deploy:
   variables:
-    PROJECT_NAME: sem-ocr
+    PROJECT_NAME: mp-media-ocr
   <<: *deploy-template
