@@ -39,8 +39,8 @@ def make_app():
 
 
 if __name__ == "__main__":
-
-    port = 8080
+    env_port = os.getenv('PORT')
+    port = env_port if env_port else 8080
     app = make_app()
     server = tornado.httpserver.HTTPServer(app)
     # server.listen(port)
