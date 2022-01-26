@@ -18,7 +18,7 @@ stages:
     - DOCKER_BUILDKIT=1 docker build -t ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION} ${PROJECT_CORE_DIR}
     - docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION}
   tags:
-    - dev
+    - docker-builder
 
 .deploy-template: &deploy-template
   stage: deploy
@@ -29,7 +29,7 @@ stages:
     - docker stop ${PROJECT_NAME} && docker rm ${PROJECT_NAME}
     - docker run -d --net=host --name=${PROJECT_NAME} ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION}
   tags:
-    - dev
+    - dev-deployer
 
 orc-build:
   variables:
