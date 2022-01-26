@@ -1,7 +1,7 @@
 variables:
   DOCKER_REGISTRY: 192.168.72.200:5000
   DOCKER_IMAGE: docker:latest
-  VERSION: ORC.2021.8.25.2.RELEASE
+  VERSION: ORC.2022.01.26.RELEASE
 
 stages:
   - build
