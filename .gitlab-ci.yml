@@ -15,7 +15,7 @@ stages:
   only:
     - master
   script:
-    - DOCKER_BUILDKIT=1 docker build -t ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION} ${PROJECT_CORE_DIR}
+    - docker build -t ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION} ${PROJECT_CORE_DIR}
     - docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION}
     - docker tag ${DOCKER_REGISTRY}/${PROJECT_NAME}:${VERSION} ${DOCKER_REGISTRY}/${PROJECT_NAME}:latest
     - docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:latest

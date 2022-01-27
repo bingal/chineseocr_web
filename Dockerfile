@@ -2,8 +2,11 @@ FROM node:12.22.1-alpine as builder
 
 WORKDIR /data/project/backend/frontend
 
-COPY backend/frontend .
-RUN npm config set registry https://registry.npm.taobao.org/ && npm install && npm run build
+
+COPY backend/frontend/package*.json ./
+RUN npm config set registry https://registry.npm.taobao.org/ && npm install
+COPY backend/frontend ./
+RUN npm run build
 
 FROM python:3.6
 
@@ -19,7 +22,7 @@ RUN pip3 install -r requirements.txt --no-cache-dir --index-url=https://mirrors.
 #代码层
 COPY . .
 RUN rm -rf /data/project/backend/frontend
-COPY --from=builder /data/project/backend/frontend backend/
+COPY --from=builder /data/project/backend/frontend backend/frontend
 
 #原有端口（不知用途）
 EXPOSE 5000
