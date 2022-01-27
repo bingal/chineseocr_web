@@ -8,7 +8,7 @@ stages:
   - deploy
 
 #templte
-.build-template: &build-template
+.build-template:
   stage: build
   image: ${DOCKER_IMAGE}
   only:
@@ -21,7 +21,7 @@ stages:
   tags:
     - docker-builder
 
-.deploy-template: &deploy-template
+.dev-deploy-template:
   stage: deploy
   image: ${DOCKER_IMAGE}
   only:
@@ -32,12 +32,33 @@ stages:
   tags:
     - dev-deployer
 
+#发布应用
+.staging-deploy-template:
+  image: registry.in-smart.cn/in-smart/kubectl:v1.22.1
+  stage: staging-deploy
+  before_script:
+    - mkdir ~/.kube/
+    - echo ${CLUSTER_CONFIG} |base64 -d > ~/.kube/config
+  script:
+    - kubectl rollout restart deployment $DEPLOYMENT -n $NAMESPACE
+    - kubectl rollout status -w deployment $DEPLOYMENT -n $NAMESPACE
+  tags:
+    - StagingCluster
+  only:
+    - master
+  when: on_success
+
 orc-build:
+  extends: .build-template
   variables:
     PROJECT_NAME: mp-media-ocr
     PROJECT_CORE_DIR: ./
-  <<: *build-template
-orc-deploy:
+orc-dev-deploy:
+  extends: .dev-deploy-template
   variables:
     PROJECT_NAME: mp-media-ocr
-  <<: *deploy-template
+orc-staging-deploy:
+  extends: .staging-deploy-template
+  variables:
+    NAMESPACE: mp-media
+    DEPLOYMENT: mp-media-ocr
