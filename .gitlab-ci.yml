@@ -5,7 +5,8 @@ variables:
 
 stages:
   - build
-  - deploy
+  - dev-deploy
+  - staging-deploy
 
 #templte
 .build-template:
@@ -22,7 +23,7 @@ stages:
     - docker-builder
 
 .dev-deploy-template:
-  stage: deploy
+  stage: dev-deploy
   image: ${DOCKER_IMAGE}
   only:
     - master
