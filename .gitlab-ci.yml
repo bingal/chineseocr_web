@@ -54,12 +54,19 @@ orc-build:
   variables:
     PROJECT_NAME: mp-media-ocr
     PROJECT_CORE_DIR: ./
+  when: on_success
 orc-dev-deploy:
   extends: .dev-deploy-template
+  needs:
+    - orc-build
   variables:
     PROJECT_NAME: mp-media-ocr
+  when: on_success
 orc-staging-deploy:
   extends: .staging-deploy-template
+  needs:
+    - orc-build
   variables:
     NAMESPACE: mp-media
     DEPLOYMENT: mp-media-ocr
+  when: on_success
