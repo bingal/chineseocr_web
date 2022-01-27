@@ -5,7 +5,7 @@ WORKDIR /data/project/backend/frontend
 COPY backend/frontend/package*.json ./
 RUN npm config set registry https://registry.npm.taobao.org/ && npm install
 COPY backend/frontend/.* .
-RUN npm run-script build
+RUN npm run build
 
 
 FROM python:3.6
