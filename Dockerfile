@@ -3,6 +3,7 @@ FROM node:12.22.1-alpine as builder
 WORKDIR /data/project/backend/frontend
 
 COPY backend/frontend/package*.json ./
+COPY backend/frontend/yarn* ./
 RUN npm config set registry https://registry.npm.taobao.org/ && npm install
 COPY backend/frontend/.* .
 RUN npm run build
