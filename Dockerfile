@@ -2,7 +2,7 @@ FROM node:12.22.1-alpine as builder
 
 WORKDIR /data/project/backend/frontend
 
-COPY backend/frontend/.* .
+COPY backend/frontend .
 RUN npm config set registry https://registry.npm.taobao.org/ && npm install && npm run build
 
 FROM python:3.6
