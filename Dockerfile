@@ -1,3 +1,14 @@
+FROM node:12.22.1-alpine as builder
+
+WORKDIR /usr/local/app
+
+COPY package*.json ./
+RUN npm config set registry https://registry.npm.taobao.org/ &&
+    npm install
+COPY . .
+RUN npm run-script build
+
+
 FROM python:3.6
 
 LABEL Author="Pad0y<github.com/Pad0y>"
