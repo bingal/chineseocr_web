@@ -13,4 +13,4 @@ class Index(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def get(self, *args, **kwargs):
-        self.render(os.path.join(BASE_PATH, 'fontend/dist/index.html'))
+        self.render(os.path.join(BASE_PATH, 'backend/frontend/dist/index.html'))
