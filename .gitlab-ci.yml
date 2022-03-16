@@ -20,8 +20,8 @@ stages:
     - docker push ${DEV_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:${VERSION}
     - docker tag ${DEV_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:${VERSION} ${DEV_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:latest
     - docker push ${DEV_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:latest
-    - docker tag ${DEV_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:${VERSION} ${PROD_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:latest
-    - docker push ${PROD_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:latest
+    - docker tag ${DEV_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:${VERSION} ${PROD_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:${VERSION}
+    - docker push ${PROD_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:${VERSION}
     - docker tag ${PROD_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:${VERSION} ${PROD_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:latest
     - docker push ${PROD_DOCKER_REGISTRY}/in-smart/${PROJECT_NAME}:latest
   tags:
