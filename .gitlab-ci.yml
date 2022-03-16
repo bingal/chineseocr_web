@@ -2,8 +2,7 @@ variables:
   GROUP: in-smart
   DOCKER_IMAGE: docker:latest
   VERSION: ORC.2022.01.26.RELEASE
-  DEV_DOCKER_REGISTRY: 192.168.72.200:5000
-  PROD_DOCKER_REGISTRY: 192.168.245.200:5000
+  DOCKER_REGISTRY: 192.168.245.200:5000
 
 stages:
   - build
@@ -17,14 +16,10 @@ stages:
   only:
     - master
   script:
-    - docker build -t ${DEV_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION} ${PROJECT_CORE_DIR}
-    - docker push ${DEV_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION}
-    - docker tag ${DEV_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION} ${DEV_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
-    - docker push ${DEV_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
-    - docker tag ${DEV_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION} ${PROD_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION}
-    - docker push ${PROD_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION}
-    - docker tag ${PROD_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION} ${PROD_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
-    - docker push ${PROD_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
+    - docker build -t ${DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION} ${PROJECT_CORE_DIR}
+    - docker push ${DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION}
+    - docker tag ${DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:${VERSION} ${DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
+    - docker push ${DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
   tags:
     - docker-builder
 
@@ -35,7 +30,7 @@ stages:
     - master
   script:
     - docker stop ${PROJECT_NAME} && docker rm ${PROJECT_NAME}
-    - docker run -d --net=host --name=${PROJECT_NAME} ${DEV_DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
+    - docker run -d --net=host --name=${PROJECT_NAME} ${DOCKER_REGISTRY}/${GROUP}/${PROJECT_NAME}:latest
   tags:
     - dev-deployer
 
