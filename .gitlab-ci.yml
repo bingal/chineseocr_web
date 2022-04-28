@@ -2,7 +2,7 @@ variables:
   GROUP: in-smart
   DOCKER_IMAGE: docker:latest
   VERSION: ORC.2022.01.26.RELEASE
-  DOCKER_REGISTRY: 192.168.245.200:5000
+  DOCKER_REGISTRY: 192.168.10.97:5000
 
 stages:
   - build
@@ -36,7 +36,7 @@ stages:
 
 #发布应用
 .staging-deploy-template:
-  image: registry.in-smart.cn/in-smart/kubectl:v1.22.1
+  image: 192.168.10.97:5000/in-smart/kubectl:v1.22.1
   stage: staging-deploy
   before_script:
     - mkdir ~/.kube/
