@@ -329,16 +329,21 @@ class TrRun(tornado.web.RequestHandler):
 
             if do_det:
 
-                res = ocrhandle.text_predict(img, short_size)
+                res_temp = ocrhandle.text_predict(img, short_size)
 
                 img_detected = img.copy()
                 img_draw = ImageDraw.Draw(img_detected)
                 colors = ['red', 'green', 'blue', "purple"]
 
-                for i, r in enumerate(res):
+                for i, r in enumerate(res_temp):
                     rect, txt, confidence = r
 
                     x1, y1, x2, y2, x3, y3, x4, y4 = rect.reshape(-1)
+                    # 高度占整个图片的高度大于20%则放弃
+                    text_box_height = max([y1,y2,y3,y4]) - min([y1,y2,y3,y4])
+                    if text_box_height*1.0/img_h > 0.2:
+                        continue
+                    res.append(r)
                     size = max(min(x2-x1, y3-y2) // 2, 20)
 
                     myfont = ImageFont.truetype("fangsong_GB2312.ttf", size=size)
